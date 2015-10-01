@@ -29,11 +29,9 @@ void init() {
 	programIndex = shaderHelper.loadShaderProgram("Shaders/vertexShader.glsl", "Shaders/fragmentShader.glsl");
 	glUseProgram(programIndex); // load the shaders
 	glClearColor(0.092f, 0.284f, 0.729f, 1.0f); // a deep blue
-	shaderHelper.setShaderColor(programIndex, "color", 1.0f, 1.0f, 1.0f);
 
 	/* Load models */
-	mesh = new Mesh(programIndex);
-	mesh->LoadMesh("Cthulhu");
+	mesh = new Mesh(programIndex, "Cthulhu");
 }
 
 /** Main OpenGL update method */
@@ -90,7 +88,7 @@ int main() {
 		return -1;
 	}
 
-	windowPtr = glfwCreateWindow(750, 750, "OpenGL Review", NULL, NULL);
+	windowPtr = glfwCreateWindow(750, 750, "Shetland Engine", NULL, NULL);
 	// check success at creating context
 	if (!windowPtr) {
 		cout << "Failure initialising window context.\n";

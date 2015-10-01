@@ -7,6 +7,6 @@ uniform mat4 worldMatrix;
 
 void main()
 {
-	fragTexUV = vecTexUV;
 	gl_Position = worldMatrix * vec4(position, 1);
+	fragTexUV = vecTexUV;
 }
