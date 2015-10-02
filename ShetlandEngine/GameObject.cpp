@@ -177,6 +177,11 @@ void GameObject::Render() {
 }
 
 /** Setters/Accessors */
+// Returns location
+vec3 GameObject::GetPosition()
+{
+	return position;
+}
 void GameObject::SetMesh(Mesh* newMesh) {
 	mesh = newMesh;
 }

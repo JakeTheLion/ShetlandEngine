@@ -24,6 +24,7 @@ class GameObject
 		void SetMass(float newMass);
 		void SetRotationVelocity(float newRotVel);
 		void SetScale(vec3 newScale);
+		vec3 GetPosition();
 		Mesh* GetMesh();
 
 		/** Gameplay & physics functions */
@@ -37,7 +38,7 @@ class GameObject
 		/** Static world variables */
 		vec3 gravity;
 
-	private:
+	protected:
 		Mesh* mesh;
 		vec3 acceleration, position, velocity, rotationAxis, scale;
 		float rotation, rotationVelocity, mass;

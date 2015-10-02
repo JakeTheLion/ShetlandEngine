@@ -41,35 +41,52 @@ void Mesh::BufferMesh() {
 	int countedUVs = 0;
 	int countedNormals = 0;
 
+	/* Currently working on code to index loaded faces and not reload faces into buffer - not complete/implemented */
+	// vector to store faces which have been found for element array
+	//vector<vec3> foundFaces = vector<vec3>();
+
 	// loop through the element indices
 	for (int i = 0; i < numIndices; ++i) {
 		// get the current total face vertex
 		vec3 face = indexData[i];
 
-		// get the components of that face vertex
-		vec3 vertex = vertexData[face[0]];
-		vec2 uv = uvData[face[1]];
-		vec3 normal = normalData[face[2]];
+		//int faceDistance = find(foundFaces.begin(), foundFaces.end(), face) - foundFaces.begin();
+		//cout << "Distance from start: " << faceDistance << ", NumFaces: " << foundFaces.size() << endl;
 
-		// push the vertex data into the temp vertex array
-		vertices[countedVertices] = vertex[0];
-		vertices[countedVertices + 1] = vertex[1];
-		vertices[countedVertices + 2] = vertex[2];
-		countedVertices += 3;
+		// if the faces we're checking now hasn't already been checked
+		//if (faceDistance >= foundFaces.size()) {
+			// get the components of that face vertex
+			vec3 vertex = vertexData[(GLuint)face[0]];
+			vec2 uv = uvData[(GLuint)face[1]];
+			vec3 normal = normalData[(GLuint)face[2]];
 
-		// push the texture coordinate data into the temp uv array
-		texCoords[countedUVs] = uv[0];
-		texCoords[countedUVs + 1] = uv[1];
-		countedUVs += 2;
+			// push the vertex data into the temp vertex array
+			vertices[countedVertices] = vertex[0];
+			vertices[countedVertices + 1] = vertex[1];
+			vertices[countedVertices + 2] = vertex[2];
+			countedVertices += 3;
 
-		// push the normal data into the temp normals array
-		normals[countedNormals] = normal[0];
-		normals[countedNormals + 1] = normal[1];
-		normals[countedNormals + 2] = normal[2];
-		countedNormals += 3;
+			// push the texture coordinate data into the temp uv array
+			texCoords[countedUVs] = uv[0];
+			texCoords[countedUVs + 1] = uv[1];
+			countedUVs += 2;
 
-		// an array of increasing integers, basically
-		indices[i] = i;
+			// push the normal data into the temp normals array
+			normals[countedNormals] = normal[0];
+			normals[countedNormals + 1] = normal[1];
+			normals[countedNormals + 2] = normal[2];
+			countedNormals += 3;
+
+			// an array of increasing integers, basically
+			indices[i] = i;
+
+			// add the current face to the list of faces we've used
+		//	foundFaces.push_back(face);
+		//}
+		//else {
+		//	indices[i] = (GLushort)faceDistance;
+		//}
+
 	}
 
 	// delete previous buffers
@@ -90,7 +107,7 @@ void Mesh::BufferMesh() {
 	glBufferSubData(GL_ARRAY_BUFFER, sizeofVerts, sizeofUVs, (void*)texCoords); //  UV data
 	glBufferSubData(GL_ARRAY_BUFFER, sizeofVerts + sizeofUVs, sizeofNorms, (void*)normals); //  normals data
 
-																							// buffer element index data into the element array
+	// buffer element index data into the element array
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeofIndices, indices, GL_STATIC_DRAW);
 
 	// cleanup temp arrays
@@ -174,8 +191,8 @@ void Mesh::LoadMesh(string fileName) {
 				splitStr = strtok_s(NULL, " f/", &token); // get next token
 
 				indexData.push_back(face);
+				}
 			}
-		}
 		}
 	}
 
@@ -204,26 +221,32 @@ void Mesh::LoadMaterial(string fileName)
 	string texture = ""; // string name of texture file to be loaded in by SOIL
 
 	inStream.open(file); // open file to load the data
-	if (inStream.is_open()) { // verify the file opened correctly
-		while (getline(inStream, line)) { // read in file line by line
-			if (line[0] == 'm' && line[1] == 'a' && line[2] == 'p') { // if line holds the texture file data
-				texture = line.substr(line.find(" ") + 1);
-			}
-		}
-		inStream.close(); // close the stream
-		cout << "Material " << texture << " loaded from file " << fileName << ".mtl\n";
-
-		// load the texture into a new ID with SOIL
-		textureID = SOIL_load_OGL_texture(	
-			&texture[0], SOIL_LOAD_AUTO,
-			SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-		// bind the texture
-		glBindTexture(GL_TEXTURE_2D, textureID); 
-	}
-	else {
+	if (!inStream.is_open()) { // verify the file opened correctly
 		cout << "Error opening material .mtl file " << fileName << " .mtl\n";
 		return;
 	}
+
+	// read in file line by line
+	while (getline(inStream, line)) { 
+		if (line[0] == 'm' && line[1] == 'a' && line[2] == 'p') { // if line holds the texture file data
+			texture = "../Models/" + (line.substr(line.find(" ") + 1));
+		}
+	}
+	inStream.close(); // close the stream
+	cout << "Material name is " << texture << ", retrieved from file " << fileName << ".mtl\n";
+
+	// load the texture into a new ID with SOIL
+	textureID = SOIL_load_OGL_texture(	
+		&texture[0], SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+
+	// check if the texture loaded correctly
+	if (textureID == 0) {
+		cout << "SOIL error loading texture " << texture << endl;
+	}
+
+	// bind the texture in OpenGL
+	glBindTexture(GL_TEXTURE_2D, textureID); 
 }
 
 /** Base render, just scale and position */
@@ -233,6 +256,7 @@ void Mesh::Render(vec3 drawPos, vec3 drawScale) {
 
 	// send world matrix to vertex shader
 	glProgramUniformMatrix4fv(programIndex, matrix, 1, false, &(translate(mat4(1.0f), drawPos) * scale(mat4(1.0f), drawScale))[0][0]); 
+
 	// push active buffer to render
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0); 
 }
@@ -244,6 +268,7 @@ void Mesh::Render(vec3 drawPos, vec3 drawScale, vec3 drawRotationAxis, float rot
 
 	// send world matrix to vertex shader
 	glProgramUniformMatrix4fv(programIndex, matrix, 1, false, &(translate(mat4(1.0f), drawPos) * rotate(mat4(1.0f), rotation, drawRotationAxis) * scale(mat4(1.0f), drawScale))[0][0]);
+
 	// push active buffer to render
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0); 
 }
