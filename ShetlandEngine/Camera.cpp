@@ -9,14 +9,17 @@ Camera::Camera()
 {
 	// Default starting position and rotation values
 	pitch = 0.0f;
-	yaw = 0.0f;
-	position = vec3(0.0f, 0.0f, 1.0f);
+	yaw = M_PI;
+	position = vec3(0.0f, 1.0f, 0.0f);
 
 	// Default min/max rotation values to clamp yaw/pitch
 	minYaw = -(float)M_PI;
 	maxYaw = (float)M_PI;
 	minPitch = -(float)M_PI_2;
 	maxPitch = (float)M_PI_2;
+
+	// Default movement speed values 
+	float moveLeftSpd = moveRightSpd = moveUpSpd = moveDownSpd = moveForwardSpd = moveBackSpd = 3.0f;
 }
 
 /// Turns the camera by dx and dy
@@ -30,26 +33,12 @@ void Camera::turn(float dx, float dy)
 
 	// Lock yaw within min and max
 	if (yaw < minYaw || yaw > maxYaw) {
-		// Special case - if max/min yaw are +/- M_PI, wrap rotation
-		if (minYaw == -(float)M_PI && maxYaw == (float)M_PI) {
-			yaw = sign(yaw)*(float)M_PI + fmod(yaw, (float)M_PI);
-		}
-		// Otherwise, lock within as normal
-		else {
-			yaw = clamp(yaw, minYaw, maxYaw);
-		}
+		yaw = clamp(yaw, minYaw, maxYaw);
 	}
 
 	// Do the same for pitch - lock within min and max
 	if (pitch < minPitch || pitch > maxPitch) {
-		// Special case - if max/min pitch are +/- M_PI, wrap rotation
-		if (minPitch == -(float)M_PI && maxPitch == (float)M_PI) {
-			pitch = sign(pitch)*(float)M_PI + fmod(pitch, (float)M_PI);
-		}
-		// Otherwise, lock within as normal
-		else {
-			pitch = clamp(pitch, minPitch, maxPitch);
-		}
+		pitch = clamp(pitch, minPitch, maxPitch);
 	}
 }
 
@@ -110,6 +99,16 @@ void Camera::SetMinMaxPitch(float _minPitch, float _maxPitch)
 	maxPitch = _maxPitch;
 }
 
+void Camera::SetMoveSpeedScalars(float _moveForwardSpd, float _moveBackSpd, float _moveLeftSpd, float _moveRightSpd, float _moveUpSpd, float _moveDownSpd)
+{
+	moveForwardSpd = _moveForwardSpd;
+	moveBackSpd = _moveBackSpd;
+	moveLeftSpd = _moveLeftSpd;
+	moveRightSpd = _moveRightSpd;
+	moveUpSpd = _moveUpSpd;
+	moveDownSpd = _moveDownSpd;
+}
+
 void Camera::Update(float deltaTime, GLFWwindow* window)
 {
 	// detect wasd key presses and move camera
@@ -117,17 +116,17 @@ void Camera::Update(float deltaTime, GLFWwindow* window)
 
 	// move camera based on inputs and its forward/right/up vectors
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraMove += GetForward();
+		cameraMove += GetForward() * moveForwardSpd;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraMove -= GetRight();
+		cameraMove -= GetRight() * moveLeftSpd;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraMove -= GetForward();
+		cameraMove -= GetForward() * moveBackSpd;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraMove += GetRight();
+		cameraMove += GetRight() * moveRightSpd;
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		cameraMove += GetUp();
+		cameraMove += GetUp() * moveUpSpd;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		cameraMove -= GetUp();
+		cameraMove -= GetUp() * moveDownSpd;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
 		glfwTerminate();
 		std::exit(0);

@@ -1,17 +1,18 @@
 #include "GameManager.h"
-#include <iostream>
 
 /** Constructor overloads */
 /// Creates a game object at the origin (0, 0) with default values.
 GameObject::GameObject() {
 	mesh = nullptr;
 	position = velocity = vec3(0.0f);
-	rotationAxis = vec3(0.0f, 0.0f, 1.0f);
+	rotationAxis = vec3(0.0f, 1.0f, 0.0f);
 	rotation = rotationVelocity = 0.0f;
 	scale = vec3(1.0f);
 	mass = 1.0f;
 	acceleration = vec3(0.0f);
-	active = false;
+	boundingBox = OBB();
+	gravity = false;
+	friction = false;
 }
 
 /// Creates a game object at a specified position with a starting velocity, rotation, and scale.
@@ -36,7 +37,11 @@ GameObject::GameObject(string _meshFile, vec3 _position, vec3 _velocity, vec3 _s
 	rotationVelocity = _rotationVelocity;
 	mass = _mass;
 	acceleration = vec3(0.0f);
-	active = false;
+	gravity = false;
+	friction = false;
+
+	// Create bounding box
+	boundingBox = OBB(mesh->GetVerts(), position);
 }
 
 /// Gameplay & physics functions
@@ -44,47 +49,33 @@ void GameObject::ApplyForce(vec3 force) {
 	acceleration += force/mass;
 }
 
+/// Check if this collides with another game object by comparing their OBBs
+bool GameObject::collidesWith(GameObject & other)
+{
+	return boundingBox.collidesWith(other.GetOBB());
+}
+
+/// Check if this collides with another OBB by comparing it to this object's OBB
+bool GameObject::collidesWith(OBB & other)
+{
+	return boundingBox.collidesWith(other);
+}
+
 /** Engine Functions **/
 /// Main physics update for GameObject
 void GameObject::Update(float deltaTime) {
-	if (active) {
-		// update physics vectors based on forces
-		acceleration *= 0.98; // general drag
-		acceleration += GameManager::gravity*deltaTime; // gravity
-
-		// physics updates
-		velocity += acceleration*deltaTime;
-		position += velocity*deltaTime;
-		rotation += rotationVelocity*deltaTime;
-
-		// bounce off screen sides
-		if (abs(position.x) >= 1) {
-			// always drag on walls
-			rotationVelocity *= .8f;
-			acceleration *= .8f;
-			velocity *= .8f;
-			// only bounce when it passes wall
-			if (abs(position.x) > 1) {
-				velocity.x *= -1;
-				position.x = round(position.x);
-			}
-		}
-		// bound off screen top/bottom
-		if (abs(position.y) >= 1) {
-			// always drag on floor
-			rotationVelocity *= .8f;
-			acceleration *= .8f;
-			velocity *= .8f;
-			// only bounce when it passes floor
-			if (abs(position.y) > 1) {
-				velocity.y *= -1;
-				position.y = round(position.y);
-			}
-		}
-
-		// render
-		Render();
+	// update physics vectors based on forces
+	if (friction) {
+		acceleration *= 0.98f; // general drag
 	}
+	if (gravity) {
+		acceleration += GameManager::gravity*deltaTime; // gravity
+	}
+
+	// physics updates
+	velocity += acceleration*deltaTime;
+	position += velocity*deltaTime;
+	rotation += rotationVelocity*deltaTime;
 }
 
 /// Main render call for GameObject
@@ -92,11 +83,23 @@ void GameObject::Render() {
 	this->mesh->Render(position, scale, rotationAxis, rotation);
 }
 
+/// Removes this game object from the world
+void GameObject::Delete()
+{
+	GameManager::Delete(this);
+}
+
 /** Mutators and Accessors */
 /// Returns private location
 const vec3 GameObject::GetPosition()
 {
 	return position;
+}
+
+/// Returns the object's OBB
+OBB GameObject::GetOBB()
+{
+	return boundingBox;
 }
 
 /// Updates the GameObject's mesh

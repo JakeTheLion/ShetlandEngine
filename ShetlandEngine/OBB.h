@@ -20,7 +20,7 @@ class OBB
 		// Data
 		vec3 center;	// Center of the OBB
 		vec3 u[3];		// The OBB's axes in world space
-		vec3 e;		// Half width of OBB in all three dimensions
+		vec3 e;			// Half width of OBB in all three dimensions
 
 		// Destructor
 		~OBB();

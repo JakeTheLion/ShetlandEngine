@@ -12,6 +12,7 @@ class WindowManager
 		// Accessors
 		static GLuint GetProgram();			// returns the program's index
 		static GLFWwindow* GetWindow();		// returns the window pointer
+		static Camera& GetCamera();			// returns the main game camera
 
 		// The WindowManager's update, which handles camera updates, etc
 		static int Update(float deltaTime);

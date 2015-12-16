@@ -150,6 +150,12 @@ GLFWwindow* WindowManager::GetWindow()
 	return windowPtr;
 }
 
+/// Returns the main game camera
+Camera& WindowManager::GetCamera()
+{
+	return mainCamera;
+}
+
 /// GLFW mouse click callback
 void WindowManager::MouseButton(GLFWwindow* window, int button, int action, int mods)
 {

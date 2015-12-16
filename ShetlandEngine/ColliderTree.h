@@ -9,8 +9,8 @@ class ColliderTree
 		ColliderTree(vec3 C, vec3 E);
 
 		// Public member functions
-		bool collidesWith(OBB*);		// checks if root node collides with collider
-		void add(OBB*);					// add collider to the root node
+		GameObject* collidesWith(GameObject*);	// checks if a GameObject collision occurs within the tree
+		void add(GameObject*);					// add collider to the root node
 
 		// Destructor
 		~ColliderTree();

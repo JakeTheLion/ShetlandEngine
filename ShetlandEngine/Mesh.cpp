@@ -252,6 +252,10 @@ void Mesh::LoadMaterial(string fileName)
 void Mesh::Render(vec3 drawPos, vec3 drawScale, vec3 drawRotationAxis, float rotation) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // describe position vertex layout to OpenGL)
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizeofVerts); // describe texture coord layout to OpenGL
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeofVerts + sizeofUVs)); // describe vertex normal layout to OpenGL
 
 	// send world matrix to vertex shader
 	glProgramUniformMatrix4fv(programIndex, matrix, 1, false, &(translate(mat4(1.0f), drawPos) * rotate(mat4(1.0f), rotation, drawRotationAxis) * scale(mat4(1.0f), drawScale))[0][0]);

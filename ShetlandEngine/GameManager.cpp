@@ -4,7 +4,7 @@
 
 #pragma region Define static variables
 vec3 GameManager::gravity;
-vector<GameObject> GameManager::worldObjects;
+vector<GameObject*> GameManager::worldObjects;
 ColliderTree GameManager::worldOctree;
 map<string, Mesh*> GameManager::meshes;
 float GameManager::currentTime;
@@ -19,7 +19,7 @@ GameManager::GameManager()
 	WindowManager windowManager = WindowManager(750, 750, "Shetland Engine");
 
 	// Initialize the array of game objects
-	worldObjects = vector<GameObject>();
+	worldObjects = vector<GameObject*>();
 
 	// Initialize the world octree
 	worldOctree = ColliderTree(vec3(), vec3(50.0f, 50.0f, 50.0f));
@@ -43,10 +43,50 @@ GameManager::GameManager()
 void GameManager::SpawnObject(string meshFile, vec3 position, vec3 velocity, vec3 scale, vec3 rotationAxis, float rotation, float rotationVelocity, float mass)
 {
 	// Instantiate the new object
-	GameObject newObj = GameObject(meshFile, position, velocity, scale, rotationAxis, rotation, rotationVelocity, mass);
+	GameObject* newObj = new GameObject(meshFile, position, velocity, scale, rotationAxis, rotation, rotationVelocity, mass);
 
 	// Add it to the world vector of objects
 	worldObjects.push_back(newObj);
+}
+
+/// Spawns a pre-defined game object and adds it to the world
+// @position		The object's starting position (defaults to origin)
+void GameManager::SpawnObject(GameObject* object, vec3 pos)
+{
+	// Update object with passed info
+	object->SetPosition(pos);
+	/*
+	object.SetVelocity(velocity);
+	object.SetScale(scale);
+	object.SetRotationAxis(rotationAxis);
+	object.SetRotation(rotation);
+	object.SetRotationVelocity(rotationVelocity);
+	object.SetMass(mass);
+	*/
+
+	// Add it to the world vector of objects
+	worldObjects.push_back(object);
+}
+
+/// Attempts to delete an object from the list of world objects
+// @object	The game object to delete
+void GameManager::Delete(GameObject * object)
+{
+	// Find the object's position in the world object list
+	int objPos = find(worldObjects.begin(), worldObjects.end(), object) - worldObjects.begin();
+	
+	// Found the object!
+	if (objPos < worldObjects.size())
+	{
+		worldObjects.erase(worldObjects.begin() + objPos);
+	}
+}
+
+/// Spawns a pre-defined game object and adds it to the world
+void GameManager::SpawnObject(GameObject* object)
+{
+	// Add it to the world vector of objects
+	worldObjects.push_back(object);
 }
 
 /// Loads a mesh into the meshes map
@@ -104,7 +144,7 @@ void GameManager::Update(float dt)
 	// Loop through objects
 	for (size_t i = 0; i < worldObjects.size(); ++i)
 	{
-		worldObjects[i].Update(dt);
+		worldObjects[i]->Update(dt);
 	}
 }
 
@@ -117,7 +157,7 @@ void GameManager::Render()
 	// Loop through objects
 	for (size_t i = 0; i < worldObjects.size(); ++i)
 	{
-		worldObjects[i].Render();
+		worldObjects[i]->Render();
 	}
 
 	// Flush the render buffer

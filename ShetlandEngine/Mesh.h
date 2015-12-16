@@ -11,15 +11,23 @@ using namespace glm;
 class Mesh
 {
 	public:
-		Mesh(void);
+		// Constructors
 		Mesh(GLuint prog, string fileName);
+
+		// Mesh loading, rendering, and buffering
 		void BufferMesh();
 		void LoadMesh(string fileName); // load a .obj file into the model's vector members
 		void LoadMaterial(string fileName); // load a .mtl file's data to prepare for texturing
 		void Render(vec3 drawPos, vec3 drawScale, vec3 drawRotationAxis, float rotation); // render the shape with rotation
+
+		// Accessors
+		vector<vec3> GetVerts() { return vertexData; }
+
+		// Destructor
 		~Mesh(void);
 
 	private:
+		Mesh(void);
 		vector<vec3> vertexData;		// array to hold the vertex data of the mesh
 		vector<vec3> normalData;		// array to hold the vertex data of the mesh
 		vector<vec2> uvData;			// array to hold the vertex data of the mesh
