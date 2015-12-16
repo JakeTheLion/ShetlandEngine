@@ -1,21 +1,22 @@
-#include "Mesh.h"
 #pragma once
+#include "Mesh.h"
+#include "OBB.h"
 
 /** Game object class */
-// Can store a mesh (currently just a single shape) and
-// has physics. Can be bound to mouse and dies after a
-// period of inactivity
+// Can store a mesh and has physics.
+class GameWorld;
 class GameObject
 {
 	public:
-		/** Constructors and Destructors */
+		// Constructors and Destructors
 		GameObject(void);
 		GameObject(Mesh* meshPtr, vec3 position, float mass);
 		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, float mass);
 		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, float mass);
 		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, vec3 scale, float mass);
 		~GameObject(void);
-		/** Setters/Accessors */
+
+		// Setters/Accessors
 		void SetMesh(Mesh* newMesh);
 		void SetPosition(vec3 newPos);
 		void SetVelocity(vec3 newVel);
@@ -24,18 +25,21 @@ class GameObject
 		void SetMass(float newMass);
 		void SetRotationVelocity(float newRotVel);
 		void SetScale(vec3 newScale);
-		vec3 GetPosition();
+		const vec3 GetPosition();
 		Mesh* GetMesh();
 
-		/** Gameplay & physics functions */
+		// Gameplay & physics functions
 		void ApplyForce(vec3 force);
-		/** Engine functions */
+
+		// Engine functions
 		void Update(float deltaTime);
 		void Render();
-		/** Public object control variables */
-		bool active, bound;
+
+		// Public object control variables
+		bool active;
 		int age;
-		/** Static world variables */
+
+		// Static world variables
 		vec3 gravity;
 
 	protected:

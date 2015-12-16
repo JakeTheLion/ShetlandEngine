@@ -85,6 +85,7 @@ void MouseButton (GLFWwindow* window, int button, int action, int mods)
 {
 	// currently unused
 }
+
 /** Mouse move callback */
 void MouseMove (GLFWwindow* window, double xPixel, double yPixel)
 {

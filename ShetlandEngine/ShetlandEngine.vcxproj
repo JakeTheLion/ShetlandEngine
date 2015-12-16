@@ -71,15 +71,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColliderTree.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="OBB.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="ShaderHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColliderTree.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="OBB.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ShaderHelpers.h" />
   </ItemGroup>
   <ItemGroup>

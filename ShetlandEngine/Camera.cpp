@@ -3,19 +3,54 @@
 #include "Camera.h"
 #include <math.h>
 
+
 /* DEFAULT CONSTRUCTOR */
 Camera::Camera()
 {
+	// Default starting position and rotation values
 	pitch = 0.0f;
 	yaw = 0.0f;
 	position = vec3(0.0f, 0.0f, 1.0f);
+
+	// Default min/max rotation values to clamp yaw/pitch
+	minYaw = -(float)M_PI;
+	maxYaw = (float)M_PI;
+	minPitch = -(float)M_PI_2;
+	maxPitch = (float)M_PI_2;
 }
 
-// Turns the camera about its axis
+/// Turns the camera by dx and dy
+// @dx		Amount to add to the yaw, clamped to the camera's minYaw/maxYaw
+// @dy		Amount to add to the pitch, clamped to the camera's minPitch/maxPitch
 void Camera::turn(float dx, float dy)
 {
+	// Add to yaw/pitch
 	yaw += dx;
 	pitch += dy;
+
+	// Lock yaw within min and max
+	if (yaw < minYaw || yaw > maxYaw) {
+		// Special case - if max/min yaw are +/- M_PI, wrap rotation
+		if (minYaw == -(float)M_PI && maxYaw == (float)M_PI) {
+			yaw = sign(yaw)*(float)M_PI + fmod(yaw, (float)M_PI);
+		}
+		// Otherwise, lock within as normal
+		else {
+			yaw = clamp(yaw, minYaw, maxYaw);
+		}
+	}
+
+	// Do the same for pitch - lock within min and max
+	if (pitch < minPitch || pitch > maxPitch) {
+		// Special case - if max/min pitch are +/- M_PI, wrap rotation
+		if (minPitch == -(float)M_PI && maxPitch == (float)M_PI) {
+			pitch = sign(pitch)*(float)M_PI + fmod(pitch, (float)M_PI);
+		}
+		// Otherwise, lock within as normal
+		else {
+			pitch = clamp(pitch, minPitch, maxPitch);
+		}
+	}
 }
 
 /** ACCESSORS **/
@@ -30,28 +65,49 @@ vec3 Camera::GetForward()
 
 	return forward;
 }
-// Returns location camera is looking at
+
+/// Returns location camera is looking at
 vec3 Camera::GetLookAt()
 {
 	return GetPosition() + GetForward();
 }
-// Return up vector from camera
+
+/// Return up vector from camera
 vec3 Camera::GetUp()
 {
 	vec3 up;
 
-	up.x = cos(pitch + M_PI/2)*sin(yaw);	// calculate x
-	up.y = sin(pitch + M_PI /2);			// calculate y
-	up.z = -cos(pitch + M_PI /2)*cos(yaw);	// calculate z
+	up.x = cos(pitch + (float)M_PI/2)*sin(yaw);	// calculate x
+	up.y = sin(pitch + (float)M_PI/2);			// calculate y
+	up.z = -cos(pitch + (float)M_PI/2)*cos(yaw);	// calculate z
 
 	return up;
 }
-// Return right vector from camera
+
+/// Return right vector from camera
 vec3 Camera::GetRight()
 {
 	// Right will be cross of up and forward
 	// Becaues it's perpendicular to both
 	return cross(GetForward(), GetUp());
+}
+
+/// Sets the min and max allowed yaw (horizontal rotation) for the camera
+// @_minYaw		The new minimum camera yaw allowed, in radians
+// @_maxYaw		The new maximum camera yaw allowed, in radians
+void Camera::SetMinMaxYaw(float _minYaw, float _maxYaw)
+{
+	minYaw = _minYaw;
+	maxYaw = _maxYaw;
+}
+
+/// Sets the min and max allowed pitch (vertical rotation) for the camera
+// @_minYaw		The new minimum camera pitch allowed, in radians
+// @_maxYaw		The new maximum camera pitch allowed, in radians
+void Camera::SetMinMaxPitch(float _minPitch, float _maxPitch)
+{
+	minPitch = _minPitch;
+	maxPitch = _maxPitch;
 }
 
 void Camera::Update(float deltaTime, GLFWwindow* window)
@@ -81,7 +137,6 @@ void Camera::Update(float deltaTime, GLFWwindow* window)
 	vec3 cameraPos = GetPosition();
 	SetPosition(cameraPos + cameraMove*deltaTime);
 }
-
 
 Camera::~Camera()
 {
