@@ -25,7 +25,6 @@ Mesh::Mesh(GLuint prog, string fileName) {
 	glEnableVertexAttribArray(2); // enable the normals attribute
 
 	matrix = glGetUniformLocation(programIndex, "worldMatrix"); // get address of the shader matrix variable
-	cout << "Constructor done\n";
 }
 
 /** Organizes mesh data (vertices, UVs, and normals) and pushes it into the buffer */
@@ -207,7 +206,7 @@ void Mesh::LoadMesh(string fileName) {
 	sizeofUVs = numIndices * 2 * sizeof(GLfloat);
 	sizeofNorms = sizeofVerts;
 
-	cout << "Model loaded\n";
+	cout << "Model " << fileName << " loaded.\n";
 }
 
 /** Load a material file based on the model */
@@ -249,18 +248,6 @@ void Mesh::LoadMaterial(string fileName)
 	glBindTexture(GL_TEXTURE_2D, textureID); 
 }
 
-/** Base render, just scale and position */
-void Mesh::Render(vec3 drawPos, vec3 drawScale) {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
-
-	// send world matrix to vertex shader
-	glProgramUniformMatrix4fv(programIndex, matrix, 1, false, &(translate(mat4(1.0f), drawPos) * scale(mat4(1.0f), drawScale))[0][0]); 
-
-	// push active buffer to render
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0); 
-}
-
 /** Render overload to render with rotation */
 void Mesh::Render(vec3 drawPos, vec3 drawScale, vec3 drawRotationAxis, float rotation) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -270,7 +257,7 @@ void Mesh::Render(vec3 drawPos, vec3 drawScale, vec3 drawRotationAxis, float rot
 	glProgramUniformMatrix4fv(programIndex, matrix, 1, false, &(translate(mat4(1.0f), drawPos) * rotate(mat4(1.0f), rotation, drawRotationAxis) * scale(mat4(1.0f), drawScale))[0][0]);
 
 	// push active buffer to render
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0); 
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 }
 
 /** Destructor, deletes vertex objects (currently disabled for bugs) */

@@ -1,81 +1,17 @@
-#include "GameObject.h"
+#include "GameManager.h"
+#include <iostream>
 
 /** Constructor overloads */
 /// Creates a game object at the origin (0, 0) with default values.
 GameObject::GameObject() {
-	this->mesh = nullptr;
-	this->position = this->velocity = vec3(0.0f);
-	this->rotationAxis = vec3(0.0f, 0.0f, 1.0f);
-	this->rotation = this->rotationVelocity = 0.0f;
-	this->scale = vec3(1.0f);
-	this->acceleration = vec3(0.0f);
-	this->mass = 1.0f;
-	gravity = vec3(0.0f, -9.8f, 0.0f);
-
+	mesh = nullptr;
+	position = velocity = vec3(0.0f);
+	rotationAxis = vec3(0.0f, 0.0f, 1.0f);
+	rotation = rotationVelocity = 0.0f;
+	scale = vec3(1.0f);
+	mass = 1.0f;
+	acceleration = vec3(0.0f);
 	active = false;
-	age = 0;
-}
-
-/// Creates a game object at a specified position.
-// @param triPtr a pointer to a GLfloat array describing a triangle
-// @param position the spawn position of the GameObject
-GameObject::GameObject(Mesh* meshPtr, vec3 position, float mass) {
-	this->mesh = meshPtr;
-	this->position = position;
-	this->velocity = vec3(0.0f);
-	this->rotationAxis = vec3(0.0f, 1.0f, 0.0f);
-	this->rotation = 0.0f;
-	this->rotationVelocity = 0.0f;
-	this->scale = vec3(1.0f);
-	this->acceleration = vec3(0.0f);
-	this->mass = mass;
-	gravity = vec3(0.0f, -9.8f, 0.0f);
-
-	active = false;
-	age = 0;
-}
-
-/// Creates a game object at a specified position with a starting velocity.
-// @param triPtr a pointer to a GLfloat array describing a triangle
-// @param position the spawn position of the GameObject
-// @param velocity the starting velocity of the GameObject
-GameObject::GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, float mass) {
-	this->mesh = meshPtr;
-	this->position = position;
-	this->velocity = velocity;
-	this->rotationAxis = vec3(0.0f, 1.0f, 0.0f);
-	this->rotation = 0.0f;
-	this->rotationVelocity = 0.0f;
-	this->scale = vec3(1.0f);
-	this->acceleration = vec3(0.0f);
-	this->mass = mass;
-	gravity = vec3(0.0f, -9.8f, 0.0f);
-
-	active = false;
-	age = 0;
-}
-
-/// Creates a game object at a specified position with a starting velocity and rotation.
-// @param triPtr a pointer to a GLfloat array describing a triangle
-// @param position the spawn position of the GameObject
-// @param velocity the starting velocity of the GameObject
-// @param rotationAxis the axis of rotation of the GameObject
-// @param rotation the starting rotation of the GameObject
-// @param rotationVelocity the starting rotational velocity of the GameObject
-GameObject::GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, float mass) {
-	this->mesh = meshPtr;
-	this->position = position;
-	this->velocity = velocity;
-	this->rotationAxis = rotationAxis;
-	this->rotation = rotation;
-	this->rotationVelocity = rotationVelocity;
-	this->scale = vec3(1.0f);
-	this->acceleration = vec3(0.0f);
-	this->mass = mass;
-	gravity = vec3(0.0f, -9.8f, 0.0f);
-
-	active = false;
-	age = 0;
 }
 
 /// Creates a game object at a specified position with a starting velocity, rotation, and scale.
@@ -86,20 +22,21 @@ GameObject::GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotatio
 // @param rotation the starting rotation of the GameObject
 // @param rotationVelocity the starting rotational velocity of the GameObject
 // @param scale the starting scale of the GameObject
-GameObject::GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, vec3 scale, float mass) {
-	this->mesh = meshPtr;
-	this->position = position;
-	this->velocity = velocity;
-	this->rotationAxis = rotationAxis;
-	this->rotation = rotation;
-	this->rotationVelocity = rotationVelocity;
-	this->scale = scale;
-	this->acceleration = vec3(0.0f);
-	this->mass = mass;
-	gravity = vec3(0.0f, -9.8f, 0.0f);
+GameObject::GameObject(string _meshFile, vec3 _position, vec3 _velocity, vec3 _scale, vec3 _rotationAxis, float _rotation, float _rotationVelocity, float _mass) {
+	// Ask the game manager to load our mesh
+	GameManager::LoadMesh(_meshFile);
 
+	// Assign variables
+	mesh = GameManager::meshes[_meshFile];
+	position = _position;
+	velocity = _velocity;
+	scale = _scale;
+	rotationAxis = _rotationAxis;
+	rotation = _rotation;
+	rotationVelocity = _rotationVelocity;
+	mass = _mass;
+	acceleration = vec3(0.0f);
 	active = false;
-	age = 0;
 }
 
 /// Gameplay & physics functions
@@ -113,7 +50,7 @@ void GameObject::Update(float deltaTime) {
 	if (active) {
 		// update physics vectors based on forces
 		acceleration *= 0.98; // general drag
-		acceleration += gravity*deltaTime; // gravity
+		acceleration += GameManager::gravity*deltaTime; // gravity
 
 		// physics updates
 		velocity += acceleration*deltaTime;
@@ -144,10 +81,6 @@ void GameObject::Update(float deltaTime) {
 				position.y = round(position.y);
 			}
 		}
-
-		// deactivate once it stops for a bit
-		if (length(velocity) < 0.001f)  { age++; }
-		if (age > 500)	{ active = false; }
 
 		// render
 		Render();

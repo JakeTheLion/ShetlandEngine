@@ -34,6 +34,7 @@ void ColliderTree::add(OBB* o) {
 
 ColliderTree::~ColliderTree() {
 	// Delete root if it's not a nullptr
-	if (root != nullptr)
+	if (root != nullptr) {
 		delete root;
+	}
 }

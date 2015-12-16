@@ -4,16 +4,19 @@
 
 /** Game object class */
 // Can store a mesh and has physics.
-class GameWorld;
 class GameObject
 {
 	public:
 		// Constructors and Destructors
 		GameObject(void);
-		GameObject(Mesh* meshPtr, vec3 position, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, vec3 scale, float mass);
+		GameObject(string _meshFile,									   // pointer to the object's mesh
+				   vec3 position = vec3(),								   // game object's starting position
+				   vec3 velocity = vec3(),								   // game object's starting velocity
+				   vec3 scale = vec3(1.0f),								   // scale along each axis (x/y/z scale = x/y/z/ of vec3)
+				   vec3 rotationAxis = vec3(0.0f, 1.0f, 0.0f),			   // axis the game object will rotate around
+				   float rotation = 0.0f,								   // object's starting rotation in radians around its rotation axis
+				   float rotationVelocity = 0.0f,						   // rotation in radians per tick around its rotation axis
+				   float mass = 1.0f);									   // mass, affects strength of force impulses
 		~GameObject(void);
 
 		// Setters/Accessors
@@ -37,10 +40,6 @@ class GameObject
 
 		// Public object control variables
 		bool active;
-		int age;
-
-		// Static world variables
-		vec3 gravity;
 
 	protected:
 		Mesh* mesh;
