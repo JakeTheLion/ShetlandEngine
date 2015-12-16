@@ -18,6 +18,7 @@ class Camera: public GameObject
 		// Mutators
 		void SetMinMaxYaw(float _minYaw, float _maxYaw);
 		void SetMinMaxPitch(float _minPitch, float _maxPitch);
+		void SetMoveSpeedScalars(float _moveForwardSpd, float _moveBackSpd, float _moveLeftSpd, float _moveRightSpd, float _moveUpSpd, float _moveDownSpd);
 
 		// Public member functions
 		void Update(float deltaTime, GLFWwindow* window);
@@ -30,5 +31,6 @@ class Camera: public GameObject
 		float pitch;				// vertical rotation
 		float minYaw, maxYaw;		// min/max horizontal rotation
 		float minPitch, maxPitch;	// min/max vertical rotation
+		float moveLeftSpd, moveRightSpd, moveUpSpd, moveDownSpd, moveForwardSpd, moveBackSpd;
 };
 

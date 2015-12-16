@@ -1,5 +1,5 @@
 #pragma once
-#include "OBB.h"
+#include "GameObject.h"
 #include <vector>
 using namespace std;
 
@@ -12,7 +12,7 @@ class Node
 		Node(vec3 C, vec3 E);
 
 		// Accessors
-		vector<OBB*> GetContents() const { return contents; }
+		vector<GameObject*> GetContents() const { return contents; }
 		OBB GetBinBox() const { return binBox; }
 		int GetCount() const { return count; }
 		int GetCapacity() const { return capacity; }
@@ -20,8 +20,8 @@ class Node
 
 		// Public member functions
 		Node& operator = (const Node &) = delete;
-		bool collidesWith(OBB*);
-		void add(OBB*);
+		GameObject* collidesWith(GameObject*);
+		void add(GameObject*);
 		void branch();
 
 		// Public member data
@@ -32,7 +32,7 @@ class Node
 
 	private:
 		// Private member data
-		vector<OBB*> contents;			// node's stored colliders
+		vector<GameObject*> contents;	// node's stored colliders
 		OBB binBox;						// the collider of the node's bin
 		int count;						// number of colliders in the node
 		int capacity;					// max number of colliders node can hold

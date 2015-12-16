@@ -73,6 +73,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ColliderTree.cpp" />
+    <ClCompile Include="Cthulhu.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -86,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColliderTree.h" />
+    <ClInclude Include="Cthulhu.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Mesh.h" />

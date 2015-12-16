@@ -31,10 +31,10 @@ Node::Node(vec3 C, vec3 E)
 /// collidesWith: checks if the passed collider hits one of these colliders or a child's
 /// Passes object down to children if this node isn't a leaf of the tree
 // @o	The other collider to check against
-bool Node::collidesWith(OBB* o) {
+GameObject* Node::collidesWith(GameObject* o) {
 	// First, make sure the passed collider even overlaps this node's bin
 	if (!o->collidesWith(binBox)) {
-		return false;
+		return nullptr;
 	}
 
 	// Handle collision checks differently depending on if the node is a leaf
@@ -42,30 +42,40 @@ bool Node::collidesWith(OBB* o) {
 		// It's a leaf node - check for collisions with each contained collider
 		for (size_t i = 0; i < contents.size(); ++i) {
 			if (o->collidesWith(*contents[i])) {
-				return true;
+				return contents[i];
 			}
 		}
 
 		// If we reach this point, none collided, so there's no collision
-		return false;
+		return nullptr;
 	}
 	// If this isn't a leaf, we pass the collision check down to the children
 	else {
+		GameObject* other = nullptr;
+
 		// Loop and check collisions with each child
-		for (int i = 0; i < 2; ++i)
-			for (int j = 0; j < 2; ++j)
-				for (int k = 0; k < 2; ++k)
-					if (children[i][j][k]->collidesWith(o))
-						return true;
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < 2; ++j) {
+				for (int k = 0; k < 2; ++k) {
+					// Update 'other' with collision results
+					other = children[i][j][k]->collidesWith(o);
 					
-		return false;
+					// If we hit an object, return it
+					if (other != nullptr) {
+						return other;
+					}
+				}
+			}
+		}
+					
+		return other;
 	}
 }
 
 /// add: attempts to add the passed collider to the node's bin box
 /// Passes object down to children if this node isn't a leaf of the tree
 // @o	The collider to add to the bin box
-void Node::add(OBB* o) {
+void Node::add(GameObject* o) {
 	// First, make sure the passed collider even overlaps this node's bin
 	if (!o->collidesWith(binBox)) {
 		return;
@@ -123,4 +133,8 @@ void Node::branch() {
 
 Node::~Node()
 {
+	//for (int i = 0; i < 2; ++i)
+	//	for (int j = 0; j < 2; ++j)
+	//		for (int k = 0; k < 2; ++k)
+	//			delete children[i][j][k];
 }

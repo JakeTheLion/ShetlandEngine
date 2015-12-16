@@ -19,7 +19,7 @@ class GameObject
 				   float mass = 1.0f);									   // mass, affects strength of force impulses
 		~GameObject(void);
 
-		// Setters/Accessors
+		// Mutators
 		void SetMesh(Mesh* newMesh);
 		void SetPosition(vec3 newPos);
 		void SetVelocity(vec3 newVel);
@@ -28,20 +28,28 @@ class GameObject
 		void SetMass(float newMass);
 		void SetRotationVelocity(float newRotVel);
 		void SetScale(vec3 newScale);
+
+		// Accessors
 		const vec3 GetPosition();
+		OBB GetOBB();
 		Mesh* GetMesh();
 
 		// Gameplay & physics functions
 		void ApplyForce(vec3 force);
+		bool collidesWith(GameObject& other);
+		bool collidesWith(OBB& other);
 
 		// Engine functions
-		void Update(float deltaTime);
-		void Render();
+		void virtual Update(float deltaTime);
+		void virtual Render();
+		void Delete();
 
 		// Public object control variables
-		bool active;
+		bool gravity;
+		bool friction;
 
 	protected:
+		OBB boundingBox;
 		Mesh* mesh;
 		vec3 acceleration, position, velocity, rotationAxis, scale;
 		float rotation, rotationVelocity, mass;
