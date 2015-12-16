@@ -43,6 +43,7 @@
     <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ProjectDir)bin;$(ExecutablePath)</ExecutablePath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -71,16 +72,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColliderTree.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="OBB.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="ShaderHelpers.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColliderTree.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="OBB.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ShaderHelpers.h" />
+    <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragmentShader.glsl" />

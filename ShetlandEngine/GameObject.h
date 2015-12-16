@@ -1,21 +1,25 @@
-#include "Mesh.h"
 #pragma once
+#include "Mesh.h"
+#include "OBB.h"
 
 /** Game object class */
-// Can store a mesh (currently just a single shape) and
-// has physics. Can be bound to mouse and dies after a
-// period of inactivity
+// Can store a mesh and has physics.
 class GameObject
 {
 	public:
-		/** Constructors and Destructors */
+		// Constructors and Destructors
 		GameObject(void);
-		GameObject(Mesh* meshPtr, vec3 position, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, float mass);
-		GameObject(Mesh* meshPtr, vec3 position, vec3 velocity, vec3 rotationAxis, float rotation, float rotationVelocity, vec3 scale, float mass);
+		GameObject(string _meshFile,									   // pointer to the object's mesh
+				   vec3 position = vec3(),								   // game object's starting position
+				   vec3 velocity = vec3(),								   // game object's starting velocity
+				   vec3 scale = vec3(1.0f),								   // scale along each axis (x/y/z scale = x/y/z/ of vec3)
+				   vec3 rotationAxis = vec3(0.0f, 1.0f, 0.0f),			   // axis the game object will rotate around
+				   float rotation = 0.0f,								   // object's starting rotation in radians around its rotation axis
+				   float rotationVelocity = 0.0f,						   // rotation in radians per tick around its rotation axis
+				   float mass = 1.0f);									   // mass, affects strength of force impulses
 		~GameObject(void);
-		/** Setters/Accessors */
+
+		// Setters/Accessors
 		void SetMesh(Mesh* newMesh);
 		void SetPosition(vec3 newPos);
 		void SetVelocity(vec3 newVel);
@@ -24,19 +28,18 @@ class GameObject
 		void SetMass(float newMass);
 		void SetRotationVelocity(float newRotVel);
 		void SetScale(vec3 newScale);
-		vec3 GetPosition();
+		const vec3 GetPosition();
 		Mesh* GetMesh();
 
-		/** Gameplay & physics functions */
+		// Gameplay & physics functions
 		void ApplyForce(vec3 force);
-		/** Engine functions */
+
+		// Engine functions
 		void Update(float deltaTime);
 		void Render();
-		/** Public object control variables */
-		bool active, bound;
-		int age;
-		/** Static world variables */
-		vec3 gravity;
+
+		// Public object control variables
+		bool active;
 
 	protected:
 		Mesh* mesh;
