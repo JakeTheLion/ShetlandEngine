@@ -32,8 +32,13 @@ void ColliderTree::add(GameObject* o) {
 	root->add(o);
 }
 
+void ColliderTree::empty()
+{
+	root->empty();
+}
+
 ColliderTree::~ColliderTree() {
-	// Delete root if it's not a nullptr
+	//Delete root if it's not a nullptr
 	//if (root != nullptr) {
 	//	delete root;
 	//}

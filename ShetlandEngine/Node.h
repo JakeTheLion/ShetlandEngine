@@ -23,6 +23,7 @@ class Node
 		GameObject* collidesWith(GameObject*);
 		void add(GameObject*);
 		void branch();
+		void empty();							// empties the node
 
 		// Public member data
 		Node* children[2][2][2];		// the child branches of this node

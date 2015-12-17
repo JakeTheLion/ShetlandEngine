@@ -11,6 +11,7 @@ class ColliderTree
 		// Public member functions
 		GameObject* collidesWith(GameObject*);	// checks if a GameObject collision occurs within the tree
 		void add(GameObject*);					// add collider to the root node
+		void empty();							// empties the octree
 
 		// Destructor
 		~ColliderTree();

@@ -131,10 +131,25 @@ void Node::branch() {
 	count = 0;
 }
 
+void Node::empty()
+{
+	if (isLeaf && contents.size() > 0) {
+		contents.clear();
+	}
+	else {
+		for (int i = 0; i < 2; ++i)
+			for (int j = 0; j < 2; ++j)
+				for (int k = 0; k < 2; ++k)
+					children[i][j][k]->empty();
+	}
+}
+
 Node::~Node()
 {
-	//for (int i = 0; i < 2; ++i)
-	//	for (int j = 0; j < 2; ++j)
-	//		for (int k = 0; k < 2; ++k)
-	//			delete children[i][j][k];
+	//if (!isLeaf)
+	//	for (int i = 0; i < 2; ++i)
+	//		for (int j = 0; j < 2; ++j)
+	//			for (int k = 0; k < 2; ++k)
+	//				if (children[i][j][k] != nullptr)
+	//					delete children[i][j][k];
 }

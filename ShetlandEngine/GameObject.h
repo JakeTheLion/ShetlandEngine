@@ -47,6 +47,8 @@ class GameObject
 		// Public object control variables
 		bool gravity;
 		bool friction;
+		string name;
+		bool isDead;
 
 	protected:
 		OBB boundingBox;

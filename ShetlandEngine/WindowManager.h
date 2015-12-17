@@ -1,6 +1,7 @@
 #pragma once
 #include "ShaderHelpers.h"
 #include "Camera.h"
+#include "GameManager.h"
 
 class WindowManager
 {

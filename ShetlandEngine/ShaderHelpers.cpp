@@ -31,7 +31,6 @@ char* ShaderHelpers::loadTextFile(const char* file) {
 		return 0;									// return if the stream didn't open correctly
 	}
 
-	cout << fileContents << endl;
 	inStream.close();								// close the in stream
 	return fileContents;
 }
