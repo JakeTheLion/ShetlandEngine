@@ -39,9 +39,12 @@ GameObject::GameObject(string _meshFile, vec3 _position, vec3 _velocity, vec3 _s
 	acceleration = vec3(0.0f);
 	gravity = false;
 	friction = false;
+	name = _meshFile;
+	isDead = false;
 
 	// Create bounding box
 	boundingBox = OBB(mesh->GetVerts(), position);
+	boundingBox.Rotate(rotationAxis, rotation);
 }
 
 /// Gameplay & physics functions
@@ -65,22 +68,28 @@ bool GameObject::collidesWith(OBB & other)
 /// Main physics update for GameObject
 void GameObject::Update(float deltaTime) {
 	// update physics vectors based on forces
+	acceleration = vec3();
 	if (friction) {
-		acceleration *= 0.98f; // general drag
+		velocity *= 0.98f; // general drag
 	}
 	if (gravity) {
-		acceleration += GameManager::gravity*deltaTime; // gravity
+		acceleration += GameManager::gravity; // gravity
 	}
 
 	// physics updates
 	velocity += acceleration*deltaTime;
 	position += velocity*deltaTime;
 	rotation += rotationVelocity*deltaTime;
+
+	// update the OBB
+	boundingBox.center = position;
+	boundingBox.Rotate(rotationAxis, rotationVelocity*deltaTime);
 }
 
 /// Main render call for GameObject
 void GameObject::Render() {
-	this->mesh->Render(position, scale, rotationAxis, rotation);
+	if(!isDead)
+		this->mesh->Render(position, scale, rotationAxis, rotation);
 }
 
 /// Removes this game object from the world

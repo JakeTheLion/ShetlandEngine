@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "WindowManager.h"
 #include <iostream>
+#include <string>
 
 #pragma region Define static variables
 vec3 GameManager::gravity;
@@ -10,11 +11,18 @@ map<string, Mesh*> GameManager::meshes;
 float GameManager::currentTime;
 float GameManager::prevTime;
 float GameManager::deltaTime;
+bool GameManager::isHeld;
+GameObject GameManager::rock;
+int GameManager::score;
+int GameManager::cthulhus;
 #pragma endregion
 
-/// GameWorld Ctor - no params, automatically creates what's needed to run the world
-GameManager::GameManager()
+/// GameWorld Ctor - Creates what's needed to run the world
+GameManager::GameManager(int spawns)
 {
+	// Set spawn count
+	cthulhus = spawns;
+
 	// Prepare the game's window manager
 	WindowManager windowManager = WindowManager(750, 750, "Shetland Engine");
 
@@ -25,10 +33,19 @@ GameManager::GameManager()
 	worldOctree = ColliderTree(vec3(), vec3(50.0f, 50.0f, 50.0f));
 
 	// Prepare world variables
-	gravity = vec3(0.0f, 0.98f, 0.0f);
+	gravity = vec3(0.0f, -30.0f, 0.0f);
 
 	// Initialize the meshes map
 	meshes = map<string, Mesh*>();
+
+	// Place rock in hand
+	isHeld = true;
+
+	// Create rock
+	rock = GameObject("Rock", vec3(), vec3(), vec3(1.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, 2.0f);
+
+	// Set score
+	score = 0;
 }
 
 /// Spawns a game object and adds it to the world objects list with all of the specified parameters
@@ -98,7 +115,6 @@ int GameManager::LoadMesh(string fileName)
 	// Call load mesh if it wasn't found in the mesh map
 	if (meshSearcher == meshes.end()) {
 		meshes[fileName] = new Mesh(WindowManager::GetProgram(), fileName);
-		cout << "Loading mesh " << fileName.c_str() << "\n";
 	}
 	
 	return -1;
@@ -141,10 +157,66 @@ void GameManager::Update(float dt)
 	deltaTime = currentTime - prevTime;
 	prevTime = currentTime;
 
+	// CLEAR OCTREE
+	worldOctree = ColliderTree(vec3(), vec3(50.0f, 50.0f, 50.0f));
+
 	// Loop through objects
 	for (size_t i = 0; i < worldObjects.size(); ++i)
 	{
+		if (worldObjects[i]->isDead)
+		{
+			worldObjects.erase(worldObjects.begin() + i);
+			i--;
+		}
+		worldOctree.add(worldObjects[i]);
 		worldObjects[i]->Update(dt);
+	}
+	rock.Update(dt);
+
+	// Place rock in hand if held
+	if(isHeld)
+	{
+		rock.SetPosition(WindowManager::GetCamera().GetLookAt() - WindowManager::GetCamera().GetUp() / 2.0f );
+	}
+	// Else check if it hit something
+	else
+	{
+		GameObject* hit = worldOctree.collidesWith(&rock);
+		if (hit != nullptr)
+		{
+			// Check if that was a Cthulhu and delete
+			if (hit->name == "Cthulhu")
+			{
+				hit->isDead = true;
+				score++;
+				cout << "Cthulhu-man slain!!!\n";
+				cout << "Score: " << score << endl;
+
+				// Give game end message
+				if (score == cthulhus)
+				{
+					cout << "You've killed all the Cthulhu-men, and ended \nthe Cult of Cthulhu's plans for world domination! \nCool beans, yo!\n";
+					cout << "Press 'Q' to quit.\n";
+				}
+
+				// reset rock to hand
+				rock.SetVelocity(vec3());
+				rock.gravity = false;
+				isHeld = true;
+			}
+
+			// reset rock to hand
+			rock.SetVelocity(vec3());
+			rock.gravity = false;
+			isHeld = true;
+		}
+		if (rock.GetPosition().y < 0.0f || rock.GetPosition().z > 10.0f)
+		{
+			// reset rock to hand
+			rock.SetVelocity(vec3());
+			rock.gravity = false;
+			isHeld = true;
+		}
 	}
 }
 
@@ -159,9 +231,20 @@ void GameManager::Render()
 	{
 		worldObjects[i]->Render();
 	}
+	rock.Render();
 
 	// Flush the render buffer
 	glFlush();
+}
+
+/// Throws rock forward
+void GameManager::throwRock()
+{
+	if (!isHeld)
+		return;
+	rock.SetVelocity(WindowManager::GetCamera().GetForward() * 30.0f);
+	rock.gravity = true;
+	isHeld = false;
 }
 
 GameManager::~GameManager()

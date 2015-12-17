@@ -159,7 +159,8 @@ Camera& WindowManager::GetCamera()
 /// GLFW mouse click callback
 void WindowManager::MouseButton(GLFWwindow* window, int button, int action, int mods)
 {
-	// currently unused
+	// Call game manager's throw rock
+	GameManager::throwRock();
 }
 
 /// GLFW mouse move callback

@@ -205,8 +205,6 @@ void Mesh::LoadMesh(string fileName) {
 	sizeofVerts = numIndices * 3 * sizeof(GLfloat);
 	sizeofUVs = numIndices * 2 * sizeof(GLfloat);
 	sizeofNorms = sizeofVerts;
-
-	cout << "Model " << fileName << " loaded.\n";
 }
 
 /** Load a material file based on the model */
@@ -232,7 +230,6 @@ void Mesh::LoadMaterial(string fileName)
 		}
 	}
 	inStream.close(); // close the stream
-	cout << "Material name is " << texture << ", retrieved from file " << fileName << ".mtl\n";
 
 	// load the texture into a new ID with SOIL
 	textureID = SOIL_load_OGL_texture(	
@@ -269,6 +266,4 @@ Mesh::~Mesh(void) {
 	// delete buffers
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &eao);
-
-	cout << "Destructor\n";
 }

@@ -5,12 +5,13 @@
 #include "ColliderTree.h"
 #include "WindowManager.h"
 #include "Mesh.h"
+#include "Cthulhu.h"
 
 class GameManager
 {
 	public:
 		// Constructor
-		GameManager();
+		GameManager(int spawns);
 
 		// A global map of meshes to file names
 		static map<string, Mesh*> meshes;
@@ -41,6 +42,9 @@ class GameManager
 		static void Update(float dt);
 		static void Render();
 
+		// Throw rock
+		static void throwRock();
+
 		// Destructor
 		~GameManager();
 
@@ -51,4 +55,11 @@ class GameManager
 		static float currentTime;				// Time elapsed between now and the program start
 		static float prevTime;					// Time elapsed between the last frame and the program start
 		static float deltaTime;					// Time between this frame and the last
+		static bool isHeld;						// If the rock is currently held
+		static GameObject rock;					// Rock to throw at Cthulhu
+		static int score;						// Number of Cthulhus killed
+		static int cthulhus;					// Number of total Cthulhus
+
+		// Unused
+		GameManager();
 };
